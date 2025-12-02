@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![Grafana](https://img.shields.io/badge/Grafana-11.0-F46800.svg)](https://grafana.com/)
 
-**Infrastructure production-ready complète** pour déployer vos applications fullstack sur VPS avec SSL automatique, monitoring professionnel et 46 scripts d'administration.
+**Infrastructure production-ready complète** pour déployer vos applications fullstack sur VPS avec SSL automatique, monitoring et 46 scripts d'administration.
 
 ---
 
