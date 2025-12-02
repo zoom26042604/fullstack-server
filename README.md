@@ -36,22 +36,23 @@
 
 ```bash
 # 1. Cloner le repo
-git clone https://github.com/VOTRE-USERNAME/fullstack-server.git
+git clone https://github.com/zoom26042604/fullstack-server.git
 cd fullstack-server/infrastructure
 
 # 2. Configurer l'environnement
 cp .env.example .env
-nano .env  # Éditer avec vos valeurs
+nano .env  # Éditer avec vos valeurs (DOMAIN, EMAIL, etc.)
 
 # 3. Générer les secrets
+chmod +x generate-secrets.sh
 ./generate-secrets.sh
 
 # 4. Déployer l'infrastructure
-cd scripts/maintenance
-./deploy-infrastructure.sh
+chmod +x scripts/maintenance/deploy-infrastructure.sh
+./scripts/maintenance/deploy-infrastructure.sh
 
 # 5. Déployer votre première app
-cd ../deploy
+cd scripts/deploy
 ./deploy.sh
 ```
 
@@ -129,7 +130,8 @@ cd infrastructure/scripts
 2. **Docker Containers** - Métriques containers en temps réel
 3. **Infrastructure Health** - Vue d'ensemble globale
 
-**Accès** : `https://grafana.votre-domaine.com`
+**Accès** : `https://grafana.zoom2604.dev`  
+**Credentials** : Voir `infrastructure/credentials.txt`
 
 ### Prometheus
 
@@ -137,7 +139,8 @@ cd infrastructure/scripts
 - Scrape interval : 15s
 - Métriques système + Docker + applications
 
-**Accès** : `http://localhost:9090`
+**Accès** : `https://prometheus.zoom2604.dev`  
+**Auth** : Basic Auth (mêmes identifiants que Traefik)
 
 ---
 
@@ -306,12 +309,19 @@ MIT License - voir [LICENSE](LICENSE)
 
 ## 💡 Support
 
-- 📧 Email : support@votre-domaine.com
-- 🐛 Issues : [GitHub Issues](https://github.com/VOTRE-USERNAME/fullstack-server/issues)
-- 📖 Wiki : [Documentation complète](https://github.com/VOTRE-USERNAME/fullstack-server/wiki)
+- 🐛 Issues : [GitHub Issues](https://github.com/zoom26042604/fullstack-server/issues)
+- 📖 Documentation : [infrastructure/DOCUMENTATION.md](infrastructure/DOCUMENTATION.md)
+- 🚀 Examples : [examples/](examples/)
 
 ---
 
-**Fait avec ❤️ pour la communauté dev**
+## 🌟 Déjà Déployé
 
-⭐ Si ce projet vous aide, n'oubliez pas de mettre une étoile !
+**Production en ligne** :
+- 🌐 Portfolio : https://zoom2604.dev/portfolio
+- 🛠️ Admin Dashboard : https://zoom2604.dev/admin
+- 📊 Monitoring : https://grafana.zoom2604.dev
+
+---
+
+⭐ Si ce projet vous aide, n'oubliez pas de mettre une étoile sur [GitHub](https://github.com/zoom26042604/fullstack-server) !

@@ -8,14 +8,15 @@ Cette infrastructure fournit tous les services nécessaires pour héberger vos a
 
 ### Traefik (Reverse Proxy + SSL)
 - **Version**: v3.1
-- **Ports**: 80 (HTTP), 443 (HTTPS)
-- **Dashboard**: https://traefik.votre-domaine.com
+- **Ports**: 80 (HTTP), 443 (HTTPS), 8080 (Dashboard)
+- **Dashboard**: https://traefik.zoom2604.dev
+- **Auth**: Basic Auth (voir credentials.txt)
 - **Fonctionnalités**:
   - SSL automatique Let's Encrypt
   - Renouvellement automatique des certificats
-  - Routing multi-domaines
+  - Routing multi-domaines avec PathPrefix
   - Load balancing
-  - Headers de sécurité
+  - Headers de sécurité (HSTS, CSP, X-Frame-Options)
 
 ### PostgreSQL (Base de données)
 - **Version**: 16
@@ -55,11 +56,12 @@ Cette infrastructure fournit tous les services nécessaires pour héberger vos a
 
 ### Grafana (Visualisation)
 - **Version**: v11.0
-- **URL**: https://grafana.votre-domaine.com
+- **URL**: https://grafana.zoom2604.dev
+- **Auth**: Authentification requise (voir credentials.txt)
 - **Dashboards préconfigurés**: 3
-  - System Overview - Performance
-  - Docker Containers - Monitoring
-  - Infrastructure Health - Overview
+  - System Overview - CPU, Memory, Disk
+  - Docker Containers - Métriques par container
+  - Infrastructure Health - Status services (Traefik, PostgreSQL, Redis, Prometheus)
 
 ### Node Exporter (Métriques Système)
 - **Port**: 9100 (localhost uniquement)
@@ -83,9 +85,9 @@ Cette infrastructure fournit tous les services nécessaires pour héberger vos a
 
 ```env
 # Domaine principal
-DOMAIN=votre-domaine.com
+DOMAIN=zoom2604.dev
 TZ=Europe/Paris
-NETWORK_NAME=app_network
+NETWORK_NAME=zoom2604_network
 
 # Versions
 TRAEFIK_VERSION=v3.1
