@@ -319,8 +319,6 @@ MIT License - voir [LICENSE](LICENSE)
 
 **Production en ligne** :
 - 🌐 Portfolio : https://zoom2604.dev/portfolio
-- 🛠️ Admin Dashboard : https://zoom2604.dev/admin
-- 📊 Monitoring : https://grafana.zoom2604.dev
 
 ---
 
