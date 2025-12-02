@@ -1,0 +1,41 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Secrets
+.traefik-password.txt
+generate-secrets.sh
+
+# Data volumes
+postgres_data/
+redis_data/
+prometheus_data/
+grafana_data/
+
+# Traefik
+traefik/acme/
+
+# Backups
+backups/
+*.sql
+*.dump
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary
+tmp/
+temp/
