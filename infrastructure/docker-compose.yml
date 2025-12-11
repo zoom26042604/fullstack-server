@@ -21,6 +21,10 @@ volumes:
     name: prometheus_data
   grafana_data:
     name: grafana_data
+  uptime_kuma_data:
+    name: uptime_kuma_data
+  portainer_data:
+    name: portainer_data
 
 services:
   # ================================
@@ -243,10 +247,10 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=zoom2604_network"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`)"
-      - "traefik.http.routers.prometheus.entrypoints=websecure"
-      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+      # Remove public DNS access - keep internal only for Grafana
+      # - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`)"
+      # - "traefik.http.routers.prometheus.entrypoints=websecure"
+      # - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       - "traefik.http.routers.prometheus.middlewares=prometheus-auth"
       - "traefik.http.middlewares.prometheus-auth.basicauth.users=${TRAEFIK_DASHBOARD_USER}:${TRAEFIK_DASHBOARD_PASSWORD_HASH}"
@@ -269,7 +273,8 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-      - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN}
+      - GF_SERVER_ROOT_URL=https://${DOMAIN}/monitoring
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
       - GF_INSTALL_PLUGINS=
       - TZ=${TZ}
     volumes:
@@ -291,9 +296,10 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)"
+      - "traefik.http.routers.grafana.rule=Host(`${DOMAIN}`) && PathPrefix(`/monitoring`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix,security-headers@file,compression@file"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
     depends_on:
       - prometheus
@@ -351,6 +357,183 @@ services:
       - /dev/kmsg
     healthcheck:
       test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ================================
+  # HOMER - Homepage Dashboard
+  # ================================
+  homer:
+    image: b4bz/homer:latest
+    container_name: homer
+    restart: unless-stopped
+    networks:
+      - app_network
+    volumes:
+      - ./homer:/www/assets
+    environment:
+      - TZ=${TZ}
+      - INIT_ASSETS=1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 32M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      # Serve Homer at root with higher priority
+      - "traefik.http.routers.homer.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.homer.entrypoints=websecure"
+      - "traefik.http.routers.homer.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.homer.priority=1"
+      - "traefik.http.routers.homer.middlewares=security-headers@file,compression@file"
+      - "traefik.http.services.homer.loadbalancer.server.port=8080"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ================================
+  # UPTIME KUMA - Uptime Monitoring
+  # ================================
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    networks:
+      - app_network
+    volumes:
+      - uptime_kuma_data:/app/data
+    environment:
+      - TZ=${TZ}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`${DOMAIN}`) && PathPrefix(`/uptime`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.uptime-kuma.middlewares=uptime-kuma-stripprefix,uptime-kuma-headers,security-headers@file,compression@file"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+      - "traefik.http.middlewares.uptime-kuma-stripprefix.stripprefix.prefixes=/uptime"
+      - "traefik.http.middlewares.uptime-kuma-addprefix.addprefix.prefix=/uptime"
+      - "traefik.http.middlewares.uptime-kuma-headers.headers.customrequestheaders.X-Forwarded-Prefix=/uptime"
+      - "traefik.http.routers.uptime-kuma.middlewares=uptime-kuma-stripprefix,uptime-kuma-headers"
+    healthcheck:
+      test: ["CMD-SHELL", "node extra/healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ================================
+  # AZRAEL - Nathan Ferré Portfolio
+  # ================================
+  azrael:
+    build:
+      context: ../../nathan-ferre.fr/azrael
+      dockerfile: Dockerfile
+    image: nathan-ferre-portfolio:latest
+    container_name: azrael
+    restart: unless-stopped
+    networks:
+      - app_network
+    environment:
+      - TZ=${TZ}
+      - NODE_ENV=production
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.azrael.rule=Host(`nathan-ferre.fr`) || Host(`www.nathan-ferre.fr`)"
+      - "traefik.http.routers.azrael.entrypoints=websecure"
+      - "traefik.http.routers.azrael.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.azrael.middlewares=azrael-redirect,security-headers@file,compression@file"
+      - "traefik.http.services.azrael.loadbalancer.server.port=3000"
+      # Redirect www to non-www
+      - "traefik.http.middlewares.azrael-redirect.redirectregex.regex=^https://www\\.nathan-ferre\\.fr/(.*)"
+      - "traefik.http.middlewares.azrael-redirect.redirectregex.replacement=https://nathan-ferre.fr/$${1}"
+      - "traefik.http.middlewares.azrael-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.azrael.middlewares=azrael-redirect"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ================================
+  # PORTAINER - Docker Management
+  # ================================
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - app_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+    environment:
+      - TZ=${TZ}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.portainer.middlewares=security-headers@file,compression@file"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:9000/api/system/status"]
       interval: 30s
       timeout: 10s
       retries: 3

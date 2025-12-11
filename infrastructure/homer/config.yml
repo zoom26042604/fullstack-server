@@ -1,0 +1,75 @@
+---
+title: "Infrastructure Dashboard"
+subtitle: "Nathan Ferré - DevOps & Full Stack Engineer"
+logo: "assets/logo.png"
+header: true
+footer: '<p>Created with <span class="has-text-danger">❤</span> by Nathan Ferré</p>'
+columns: "auto"
+connectivityCheck: true
+theme: default
+
+message:
+  style: "is-dark"
+  title: "👋 Bienvenue"
+  icon: "fa fa-server"
+  content: "Dashboard centralisé - Multi-domaines (nathan-ferre.fr & zoom2604.dev)"
+
+links:
+  - name: "GitHub"
+    icon: "fab fa-github"
+    url: "https://github.com/zoom26042604"
+    target: "_blank"
+  - name: "Portfolio"
+    icon: "fas fa-user"
+    url: "https://nathan-ferre.fr"
+    target: "_blank"
+
+services:
+  - name: "🌐 Production Websites"
+    icon: "fas fa-globe"
+    items:
+      - name: "Portfolio Nathan Ferré"
+        subtitle: "nathan-ferre.fr - Next.js"
+        tag: "production"
+        url: "https://nathan-ferre.fr"
+        target: "_blank"
+
+  - name: "⚙️ Infrastructure"
+    icon: "fas fa-server"
+    items:
+      - name: "Traefik Dashboard"
+        subtitle: "Reverse Proxy & SSL"
+        tag: "core"
+        url: "https://traefik.zoom2604.dev"
+        target: "_blank"
+        
+      - name: "Grafana"
+        subtitle: "Metrics & Dashboards"
+        tag: "monitoring"
+        url: "https://zoom2604.dev/monitoring"
+        target: "_blank"
+        
+      - name: "Uptime Kuma"
+        subtitle: "Availability Monitoring"
+        tag: "monitoring"
+        url: "https://zoom2604.dev/uptime"
+        target: "_blank"
+        
+      - name: "Portainer"
+        subtitle: "Docker Management"
+        tag: "docker"
+        url: "https://portainer.zoom2604.dev"
+        target: "_blank"
+
+  - name: "💾 Database & Cache"
+    icon: "fas fa-database"
+    items:
+      - name: "PostgreSQL 16"
+        subtitle: "Primary Database"
+        tag: "database"
+      - name: "Redis 7"
+        subtitle: "Cache & Sessions"
+        tag: "cache"
+      - name: "pgBouncer"
+        subtitle: "Connection Pooler"
+        tag: "database"

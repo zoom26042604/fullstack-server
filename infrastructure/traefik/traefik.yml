@@ -22,7 +22,6 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-    network: app_network
   file:
     filename: /config.yml
     watch: true
