@@ -232,7 +232,7 @@ Créer une **infrastructure complète de production** pour héberger mes projets
 
 ## 🚀 Services déployés
 
-### Détail de chaque service
+### Détail de chaque service (11 services actifs)
 
 #### 1. Traefik (Reverse Proxy)
 ```yaml

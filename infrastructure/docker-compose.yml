@@ -1,7 +1,5 @@
-version: '3.9'
-
 # ================================
-# FULLSTACK SERVER INFRASTRUCTURE
+# INFRASTRUCTURE - zoom2604.dev
 # Production-ready monitoring & database stack
 # ================================
 
