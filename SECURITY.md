@@ -46,7 +46,7 @@ This infrastructure follows industry-standard security practices:
 - Dependency vulnerability scanning
 
 ### Reporting Security Issues
-If you discover a security vulnerability, please email: security@example.com
+If you discover a security vulnerability, please open a private security advisory on GitHub or contact the repository owner directly.
 
 **Do not** open public issues for security vulnerabilities.
 
