@@ -21,3 +21,6 @@ credentials.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude AI context file
+CLAUDE.md
