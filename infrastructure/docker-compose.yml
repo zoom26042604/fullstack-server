@@ -297,7 +297,7 @@ services:
       - "traefik.http.routers.grafana.rule=Host(`${DOMAIN}`) && PathPrefix(`/monitoring`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.grafana.middlewares=grafana-stripprefix,security-headers@file,compression@file"
+      - "traefik.http.routers.grafana.middlewares=security-headers@file,compression@file"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
     depends_on:
       - prometheus
@@ -431,15 +431,11 @@ services:
         max-file: "3"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`${DOMAIN}`) && PathPrefix(`/uptime`)"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.${DOMAIN}`)"
       - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
       - "traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.uptime-kuma.middlewares=uptime-kuma-stripprefix,uptime-kuma-headers,security-headers@file,compression@file"
+      - "traefik.http.routers.uptime-kuma.middlewares=security-headers@file,compression@file"
       - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
-      - "traefik.http.middlewares.uptime-kuma-stripprefix.stripprefix.prefixes=/uptime"
-      - "traefik.http.middlewares.uptime-kuma-addprefix.addprefix.prefix=/uptime"
-      - "traefik.http.middlewares.uptime-kuma-headers.headers.customrequestheaders.X-Forwarded-Prefix=/uptime"
-      - "traefik.http.routers.uptime-kuma.middlewares=uptime-kuma-stripprefix,uptime-kuma-headers"
     healthcheck:
       test: ["CMD-SHELL", "node extra/healthcheck.js"]
       interval: 30s
