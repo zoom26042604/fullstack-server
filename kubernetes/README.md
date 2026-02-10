@@ -20,38 +20,52 @@ kubernetes/
 │   └── admin-panel.yaml          # Admin panel (admin.zoom2604.dev)
 ├── monitoring/                    # Stack de monitoring
 │   └── (installé via Helm)
-├── install-k3s.sh                # Installation K3s
-├── setup-namespaces.sh           # Création namespaces
-├── create-secrets.sh             # Création secrets K8s
-├── install-cert-manager.sh       # Installation cert-manager
-├── install-monitoring.sh         # Installation Prometheus/Grafana
-├── install-loki.sh               # Installation Loki
-├── build-images.sh               # Build Docker images
-├── import-images-to-k3s.sh       # Import images dans K3s
-└── MIGRATION_GUIDE.md            # Guide de migration complet
+├── scripts/                       # Scripts d'installation
+│   ├── install-k3s.sh            # Installation K3s
+│   ├── setup-namespaces.sh       # Création namespaces
+│   ├── create-secrets.sh         # Création secrets K8s
+│   ├── install-cert-manager.sh   # Installation cert-manager
+│   ├── install-monitoring.sh     # Installation Prometheus/Grafana
+│   ├── install-loki.sh           # Installation Loki
+│   ├── build-images.sh           # Build Docker images
+│   └── import-images-to-k3s.sh   # Import images dans K3s
+├── install.sh                     # 🚀 Installation automatique complète
+├── MIGRATION_GUIDE.md            # Guide de migration complet
+└── README.md                     # Documentation
 ```
 
 ## 🚀 Quick Start
 
-### 1. Installer K3s
+### Installation automatique (recommandé)
 
 ```bash
 cd /srv/homelab/kubernetes
-sudo ./install-k3s.sh
+sudo ./install.sh
 ```
 
-### 2. Créer les namespaces et secrets
+Le script interactif vous guidera à travers toute l'installation !
+
+### Installation manuelle
+
+#### 1. Installer K3s
 
 ```bash
-./setup-namespaces.sh
-./create-secrets.sh
+cd /srv/homelab/kubernetes
+sudo ./scripts/install-k3s.sh
 ```
 
-### 3. Installer l'infrastructure de base
+#### 2. Créer les namespaces et secrets
+
+```bash
+./scripts/setup-namespaces.sh
+./scripts/create-secrets.sh
+```
+
+#### 3. Installer l'infrastructure de base
 
 ```bash
 # cert-manager pour SSL
-./install-cert-manager.sh
+./scripts/install-cert-manager.sh
 kubectl apply -f infrastructure/cert-manager-issuer.yaml
 
 # Traefik Ingress Controller
@@ -70,11 +84,11 @@ kubectl apply -f infrastructure/postgres.yaml
 kubectl apply -f infrastructure/redis.yaml
 ```
 
-### 5. Builder et déployer les applications
+#### 5. Builder et déployer les applications
 
 ```bash
-./build-images.sh
-./import-images-to-k3s.sh
+./scripts/build-images.sh
+./scripts/import-images-to-k3s.sh
 
 kubectl apply -f apps/portfolio-azrael.yaml
 kubectl apply -f apps/cv.yaml
@@ -82,11 +96,11 @@ kubectl apply -f apps/game-2048.yaml
 kubectl apply -f apps/admin-panel.yaml
 ```
 
-### 6. Installer le monitoring
+#### 6. Installer le monitoring
 
 ```bash
-./install-monitoring.sh
-./install-loki.sh
+./scripts/install-monitoring.sh
+./scripts/install-loki.sh
 ```
 
 ## 🌐 Services déployés

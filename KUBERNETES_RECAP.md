@@ -43,20 +43,37 @@
 
 ## 🚀 Prochaines étapes pour toi
 
-### Option A : Migration progressive (recommandé)
+### Option A : Installation automatique (RECOMMANDÉ ⭐)
+
+**Le plus simple - 1 seule commande !**
+
+```bash
+cd /srv/homelab/kubernetes
+sudo ./install.sh
+```
+
+Le script interactif fait tout pour toi en 30-60 minutes :
+- ✅ Installation K3s
+- ✅ Configuration complète
+- ✅ Déploiement des apps
+- ✅ Monitoring (optionnel)
+
+---
+
+### Option B : Installation manuelle étape par étape
 
 **Phase 1 - Préparation (30 min)**
 ```bash
 cd /srv/homelab/kubernetes
-sudo ./install-k3s.sh
-./setup-namespaces.sh
-./create-secrets.sh
+sudo ./scripts/install-k3s.sh
+./scripts/setup-namespaces.sh
+./scripts/create-secrets.sh
 ```
 
 **Phase 2 - Test avec une app (1h)**
 ```bash
 # Installer cert-manager et Traefik
-./install-cert-manager.sh
+./scripts/install-cert-manager.sh
 kubectl apply -f infrastructure/cert-manager-issuer.yaml
 kubectl apply -f infrastructure/traefik.yaml
 
@@ -67,15 +84,17 @@ sudo apt-get install -y iptables-persistent
 sudo netfilter-persistent save
 
 # Tester avec le portfolio
-./build-images.sh
-./import-images-to-k3s.sh
+./scripts/build-images.sh
+./scripts/import-images-to-k3s.sh
 kubectl apply -f apps/portfolio-azrael.yaml
 ```
 
 **Phase 3 - Migration complète**
 Suivre le [MIGRATION_GUIDE.md](kubernetes/MIGRATION_GUIDE.md)
 
-### Option B : Migration directe (2-3h)
+---
+
+### Option C : Lire la documentation d'abord
 
 Suivre le guide complet dans [kubernetes/MIGRATION_GUIDE.md](kubernetes/MIGRATION_GUIDE.md)
 

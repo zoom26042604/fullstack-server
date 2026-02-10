@@ -9,7 +9,37 @@ Ce guide détaille la migration complète de votre infrastructure Docker Compose
 - Accès root (sudo)
 - Domaines configurés : nathan-ferre.fr, zoom2604.dev
 
-## ⏱️ Temps estimé : 2-3 heures
+## ⏱️ Temps estimé : 30 minutes à 2 heures
+
+---
+
+## 🚀 Option A : Installation automatique (RECOMMANDÉ)
+
+La méthode la plus simple et rapide :
+
+```bash
+cd /srv/homelab/kubernetes
+sudo ./install.sh
+```
+
+Le script interactif va :
+1. ✅ Vérifier les prérequis
+2. ✅ Installer K3s
+3. ✅ Créer les namespaces et secrets
+4. ✅ Installer cert-manager (SSL)
+5. ✅ Configurer iptables
+6. ✅ Déployer Traefik
+7. ✅ Déployer PostgreSQL et Redis
+8. ✅ Builder et déployer les applications
+9. ✅ Installer le monitoring (optionnel)
+
+**Temps estimé : 30-60 minutes**
+
+---
+
+## 📖 Option B : Installation manuelle (étape par étape)
+
+Pour plus de contrôle sur chaque étape :
 
 ---
 
@@ -19,8 +49,8 @@ Ce guide détaille la migration complète de votre infrastructure Docker Compose
 
 ```bash
 cd /srv/homelab/kubernetes
-chmod +x install-k3s.sh
-sudo ./install-k3s.sh
+chmod +x scripts/install-k3s.sh
+sudo ./scripts/install-k3s.sh
 ```
 
 **Vérification :**
@@ -32,8 +62,8 @@ kubectl get pods -A
 ### 1.2 - Créer les namespaces
 
 ```bash
-chmod +x setup-namespaces.sh
-./setup-namespaces.sh
+chmod +x scripts/setup-namespaces.sh
+./scripts/setup-namespaces.sh
 ```
 
 **Vérification :**
@@ -44,8 +74,8 @@ kubectl get namespaces
 ### 1.3 - Créer les secrets
 
 ```bash
-chmod +x create-secrets.sh
-./create-secrets.sh
+chmod +x scripts/create-secrets.sh
+./scripts/create-secrets.sh
 ```
 
 **Vérification :**
@@ -62,8 +92,8 @@ kubectl get secrets -n zoom2604
 ### 2.1 - Installer cert-manager
 
 ```bash
-chmod +x install-cert-manager.sh
-./install-cert-manager.sh
+chmod +x scripts/install-cert-manager.sh
+./scripts/install-cert-manager.sh
 ```
 
 **Attendre que cert-manager soit prêt (2-3 minutes)**
@@ -168,8 +198,8 @@ kubectl get svc -n infrastructure
 
 ```bash
 cd /srv/homelab/kubernetes
-chmod +x build-images.sh
-./build-images.sh
+chmod +x scripts/build-images.sh
+./scripts/build-images.sh
 ```
 
 **Temps estimé : 15-20 minutes**
@@ -177,8 +207,8 @@ chmod +x build-images.sh
 ### 4.2 - Importer les images dans K3s
 
 ```bash
-chmod +x import-images-to-k3s.sh
-./import-images-to-k3s.sh
+chmod +x scripts/import-images-to-k3s.sh
+./scripts/import-images-to-k3s.sh
 ```
 
 ### 4.3 - Déployer les applications
@@ -221,8 +251,8 @@ kubectl get certificates -A
 
 ```bash
 cd /srv/homelab/kubernetes
-chmod +x install-monitoring.sh
-./install-monitoring.sh
+chmod +x scripts/install-monitoring.sh
+./scripts/install-monitoring.sh
 ```
 
 **Attendre que tout soit prêt (5-10 minutes)**
@@ -234,8 +264,8 @@ kubectl get pods -n monitoring -w
 ### 5.2 - Installer Loki
 
 ```bash
-chmod +x install-loki.sh
-./install-loki.sh
+chmod +x scripts/install-loki.sh
+./scripts/install-loki.sh
 ```
 
 ### 5.3 - Accéder à Grafana
