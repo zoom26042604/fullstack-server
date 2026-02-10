@@ -3,7 +3,12 @@
 # Homelab Kubernetes - Installation Automatique
 # ================================
 
-set -e
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# Exit on error, but allow us to handle it
+set -uo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -66,12 +71,22 @@ check_requirements() {
     
     if [ "$TOTAL_RAM" -lt 8 ]; then
         log_warning "RAM insuffisante (${TOTAL_RAM}GB < 8GB recommandé)"
+        read -p "Continuer quand même? (y/N) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
     else
         log_success "RAM suffisante: ${TOTAL_RAM}GB"
     fi
     
     if [ "$TOTAL_DISK" -lt 50 ]; then
         log_warning "Disque insuffisant (${TOTAL_DISK}GB < 50GB recommandé)"
+        read -p "Continuer quand même? (y/N) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
     else
         log_success "Disque suffisant: ${TOTAL_DISK}GB"
     fi
@@ -87,12 +102,21 @@ check_requirements() {
     if command -v kubectl &> /dev/null; then
         log_warning "kubectl déjà installé"
     fi
+    
+    # Check if .env exists
+    if [ ! -f "$SCRIPT_DIR/../infrastructure/.env" ]; then
+        log_error "Fichier .env non trouvé dans infrastructure/"
+        log_info "Chemin attendu: $SCRIPT_DIR/../infrastructure/.env"
+        exit 1
+    else
+        log_success "Fichier .env trouvé"
+    fi
 }
 
 install_k3s() {
     print_step "Phase 1: Installation K3s"
     
-    if systemctl is-active --quiet k3s; then
+    if systemctl is-active --quiet k3s 2>/dev/null; then
         log_warning "K3s est déjà installé et actif"
         read -p "Voulez-vous réinstaller K3s? (y/N) " -n 1 -r
         echo
@@ -102,9 +126,8 @@ install_k3s() {
         fi
     fi
     
-    cd "$(dirname "$0")"
-    chmod +x scripts/install-k3s.sh
-    ./scripts/install-k3s.sh
+    chmod +x "$SCRIPT_DIR/scripts/install-k3s.sh"
+    "$SCRIPT_DIR/scripts/install-k3s.sh"
     
     log_success "K3s installé avec succès"
     sleep 5
@@ -113,9 +136,8 @@ install_k3s() {
 setup_namespaces() {
     print_step "Phase 2: Configuration des namespaces"
     
-    cd "$(dirname "$0")"
-    chmod +x scripts/setup-namespaces.sh
-    ./scripts/setup-namespaces.sh
+    chmod +x "$SCRIPT_DIR/scripts/setup-namespaces.sh"
+    "$SCRIPT_DIR/scripts/setup-namespaces.sh"
     
     log_success "Namespaces créés"
 }
@@ -123,15 +145,14 @@ setup_namespaces() {
 create_secrets() {
     print_step "Phase 3: Création des secrets Kubernetes"
     
-    if [ ! -f "../infrastructure/.env" ]; then
+    if [ ! -f "$SCRIPT_DIR/../infrastructure/.env" ]; then
         log_error "Fichier .env non trouvé dans infrastructure/"
         log_info "Veuillez créer le fichier .env avant de continuer"
         exit 1
     fi
     
-    cd "$(dirname "$0")"
-    chmod +x scripts/create-secrets.sh
-    ./scripts/create-secrets.sh
+    chmod +x "$SCRIPT_DIR/scripts/create-secrets.sh"
+    "$SCRIPT_DIR/scripts/create-secrets.sh"
     
     log_success "Secrets créés"
 }
@@ -139,12 +160,11 @@ create_secrets() {
 install_cert_manager() {
     print_step "Phase 4: Installation cert-manager (SSL)"
     
-    cd "$(dirname "$0")"
-    chmod +x scripts/install-cert-manager.sh
-    ./scripts/install-cert-manager.sh
+    chmod +x "$SCRIPT_DIR/scripts/install-cert-manager.sh"
+    "$SCRIPT_DIR/scripts/install-cert-manager.sh"
     
     log_info "Création des ClusterIssuers..."
-    kubectl apply -f infrastructure/cert-manager-issuer.yaml
+    kubectl apply -f "$SCRIPT_DIR/infrastructure/cert-manager-issuer.yaml"
     
     log_success "cert-manager configuré"
 }
@@ -176,13 +196,12 @@ configure_iptables() {
 deploy_traefik() {
     print_step "Phase 6: Déploiement Traefik"
     
-    cd "$(dirname "$0")"
-    kubectl apply -f infrastructure/traefik.yaml
+    kubectl apply -f "$SCRIPT_DIR/infrastructure/traefik.yaml"
     
     log_info "Attente du démarrage de Traefik (30s)..."
     sleep 30
     
-    kubectl wait --for=condition=available --timeout=120s deployment/traefik -n infrastructure || true
+    kubectl wait --for=condition=available --timeout=120s deployment/traefik -n infrastructure 2>/dev/null || log_warning "Timeout - vérifiez avec: kubectl get pods -n infrastructure"
     
     log_success "Traefik déployé"
 }
@@ -190,19 +209,17 @@ deploy_traefik() {
 deploy_databases() {
     print_step "Phase 7: Déploiement des bases de données"
     
-    cd "$(dirname "$0")"
-    
     log_info "Déploiement PostgreSQL..."
-    kubectl apply -f infrastructure/postgres.yaml
+    kubectl apply -f "$SCRIPT_DIR/infrastructure/postgres.yaml"
     
     log_info "Déploiement Redis..."
-    kubectl apply -f infrastructure/redis.yaml
+    kubectl apply -f "$SCRIPT_DIR/infrastructure/redis.yaml"
     
     log_info "Attente du démarrage des bases de données (60s)..."
     sleep 60
     
-    kubectl wait --for=condition=ready --timeout=120s pod -l app=postgres -n infrastructure || true
-    kubectl wait --for=condition=ready --timeout=120s pod -l app=redis -n infrastructure || true
+    kubectl wait --for=condition=ready --timeout=120s pod -l app=postgres -n infrastructure 2>/dev/null || log_warning "Timeout PostgreSQL"
+    kubectl wait --for=condition=ready --timeout=120s pod -l app=redis -n infrastructure 2>/dev/null || log_warning "Timeout Redis"
     
     log_success "Bases de données déployées"
 }
@@ -213,23 +230,21 @@ build_and_deploy_apps() {
     read -p "Voulez-vous builder les images Docker? (y/N) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        cd "$(dirname "$0")"
-        chmod +x scripts/build-images.sh
-        ./scripts/build-images.sh
+        chmod +x "$SCRIPT_DIR/scripts/build-images.sh"
+        "$SCRIPT_DIR/scripts/build-images.sh"
         
-        chmod +x scripts/import-images-to-k3s.sh
-        ./scripts/import-images-to-k3s.sh
+        chmod +x "$SCRIPT_DIR/scripts/import-images-to-k3s.sh"
+        "$SCRIPT_DIR/scripts/import-images-to-k3s.sh"
     else
         log_warning "Build des images ignoré"
     fi
     
     log_info "Déploiement des applications..."
-    cd "$(dirname "$0")"
     
-    kubectl apply -f apps/portfolio-azrael.yaml
-    kubectl apply -f apps/cv.yaml
-    kubectl apply -f apps/game-2048.yaml
-    kubectl apply -f apps/admin-panel.yaml
+    kubectl apply -f "$SCRIPT_DIR/apps/portfolio-azrael.yaml"
+    kubectl apply -f "$SCRIPT_DIR/apps/cv.yaml"
+    kubectl apply -f "$SCRIPT_DIR/apps/game-2048.yaml"
+    kubectl apply -f "$SCRIPT_DIR/apps/admin-panel.yaml"
     
     log_success "Applications déployées"
 }
@@ -244,15 +259,13 @@ install_monitoring() {
         return
     fi
     
-    cd "$(dirname "$0")"
-    
     log_info "Installation kube-prometheus-stack..."
-    chmod +x scripts/install-monitoring.sh
-    ./scripts/install-monitoring.sh
+    chmod +x "$SCRIPT_DIR/scripts/install-monitoring.sh"
+    "$SCRIPT_DIR/scripts/install-monitoring.sh"
     
     log_info "Installation Loki..."
-    chmod +x scripts/install-loki.sh
-    ./scripts/install-loki.sh
+    chmod +x "$SCRIPT_DIR/scripts/install-loki.sh"
+    "$SCRIPT_DIR/scripts/install-loki.sh"
     
     log_success "Monitoring installé"
 }

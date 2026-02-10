@@ -5,15 +5,19 @@
 
 set -e
 
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "🔐 Creating Kubernetes secrets from .env file..."
 
 # Source the .env file
-if [ ! -f "../infrastructure/.env" ]; then
-    echo "❌ .env file not found in infrastructure directory"
+ENV_FILE="$SCRIPT_DIR/../../infrastructure/.env"
+if [ ! -f "$ENV_FILE" ]; then
+    echo "❌ .env file not found at: $ENV_FILE"
     exit 1
 fi
 
-source ../infrastructure/.env
+source "$ENV_FILE"
 
 # PostgreSQL Secret
 kubectl create secret generic postgres-credentials \
