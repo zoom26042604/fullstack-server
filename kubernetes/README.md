@@ -36,6 +36,13 @@ kubernetes/
 
 ## 🚀 Quick Start
 
+### ✅ Vérifier avant de commencer
+
+```bash
+cd /srv/homelab/kubernetes
+./check.sh
+```
+
 ### Installation automatique (recommandé)
 
 ```bash
@@ -44,6 +51,10 @@ sudo ./install.sh
 ```
 
 Le script interactif vous guidera à travers toute l'installation !
+
+**Besoin d'aide ?** Consultez le [Guide de dépannage](TROUBLESHOOTING.md)
+
+---
 
 ### Installation manuelle
 
@@ -284,9 +295,12 @@ kubectl logs -n infrastructure deployment/traefik
 
 ## 📚 Documentation
 
+- **Démarrage rapide** : [QUICKSTART.md](QUICKSTART.md)
 - **Guide de migration complet** : [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
-- [K3s Documentation](https://docs.k3s.io/)
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
+- **Documentation technique** : Ce fichier (README.md)
+- **Documentation des scripts** : [scripts/README.md](scripts/README.md)
+- **🔧 Dépannage** : [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- **Récapitulatif** : [../KUBERNETES_RECAP.md](../KUBERNETES_RECAP.md)
 
 ## 🎯 Architecture
 
