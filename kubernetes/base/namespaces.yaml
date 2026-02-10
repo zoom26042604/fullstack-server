@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: infrastructure
+  labels:
+    app.kubernetes.io/part-of: homelab
+    name: infrastructure
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nathan-ferre
+  labels:
+    app.kubernetes.io/part-of: homelab
+    domain: nathan-ferre.fr
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: zoom2604
+  labels:
+    app.kubernetes.io/part-of: homelab
+    domain: zoom2604.dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/part-of: homelab
+    name: monitoring
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+  labels:
+    app.kubernetes.io/part-of: homelab
+    name: cert-manager

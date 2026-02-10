@@ -23,10 +23,10 @@ volumes:
     name: uptime_kuma_data
   portainer_data:
     name: portainer_data
-  hytale_server:
-    name: hytale_server
-  hytale_assets:
-    name: hytale_assets
+  # hytale_server:
+  #   name: hytale_server
+  # hytale_assets:
+  #   name: hytale_assets
   game2048_data:
     name: game2048_data
 
@@ -538,41 +538,41 @@ services:
       start_period: 30s
 
   # ================================
-  # HYTALE SERVER - Game Server
+  # HYTALE SERVER - Game Server (DISABLED - Moved to archive)
   # ================================
-  hytale:
-    build:
-      context: ./hytale
-      dockerfile: Dockerfile
-    container_name: hytale
-    restart: unless-stopped
-    networks:
-      - app_network
-    ports:
-      - "5520:5520/udp"  # Hytale uses UDP protocol
-    volumes:
-      - hytale_server:/hytale/server
-      - hytale_assets:/hytale/assets
-      - ./hytale/config.json:/hytale/server/config.json:ro
-    environment:
-      - TZ=${TZ}
-      - HYTALE_MEMORY=5G  # 5GB optimized for stability
-      - JAVA_OPTS=-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=150 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=25 -XX:G1MaxNewSizePercent=35 -XX:G1HeapRegionSize=4M -XX:G1ReservePercent=15 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=20 -XX:G1MixedGCLiveThresholdPercent=85 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -XX:+UseStringDeduplication
-    deploy:
-      resources:
-        limits:
-          cpus: '3.0'
-          memory: 6G
-        reservations:
-          cpus: '1.0'
-          memory: 4G
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "3"
-    stdin_open: true  # Keep stdin open for console commands
-    tty: true         # Allocate a pseudo-TTY for interactive console
+  # hytale:
+  #   build:
+  #     context: ./hytale
+  #     dockerfile: Dockerfile
+  #   container_name: hytale
+  #   restart: unless-stopped
+  #   networks:
+  #     - app_network
+  #   ports:
+  #     - "5520:5520/udp"  # Hytale uses UDP protocol
+  #   volumes:
+  #     - hytale_server:/hytale/server
+  #     - hytale_assets:/hytale/assets
+  #     - ./hytale/config.json:/hytale/server/config.json:ro
+  #   environment:
+  #     - TZ=${TZ}
+  #     - HYTALE_MEMORY=5G  # 5GB optimized for stability
+  #     - JAVA_OPTS=-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=150 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=25 -XX:G1MaxNewSizePercent=35 -XX:G1HeapRegionSize=4M -XX:G1ReservePercent=15 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=20 -XX:G1MixedGCLiveThresholdPercent=85 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -XX:+UseStringDeduplication
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '3.0'
+  #         memory: 6G
+  #       reservations:
+  #         cpus: '1.0'
+  #         memory: 4G
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "50m"
+  #       max-file: "3"
+  #   stdin_open: true  # Keep stdin open for console commands
+  #   tty: true         # Allocate a pseudo-TTY for interactive console
 
   # ================================
   # GAME 2048 - Puzzle Game

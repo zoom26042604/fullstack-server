@@ -1,12 +1,13 @@
-# 🚀 Fullstack Server Infrastructure
+# 🏠 Homelab Infrastructure
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-K3s-326CE5.svg)](https://k3s.io/)
 [![Docker](https://img.shields.io/badge/Docker-24.0+-blue.svg)](https://www.docker.com/)
 [![Traefik](https://img.shields.io/badge/Traefik-v3.1-00ADD8.svg)](https://traefik.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![Grafana](https://img.shields.io/badge/Grafana-11.0-F46800.svg)](https://grafana.com/)
 
-**Infrastructure production-ready complète** pour déployer vos applications fullstack sur VPS avec SSL automatique, monitoring et 46 scripts d'administration.
+**Infrastructure homelab production-ready** pour déployer vos applications sur VPS avec Kubernetes (K3s), SSL automatique, monitoring complet et GitOps.
 
 ---
 
@@ -36,18 +37,19 @@
 
 ```bash
 # 1. Cloner le repo
-git clone https://github.com/zoom26042604/fullstack-server.git
-cd fullstack-server/infrastructure
+git clone https://github.com/zoom26042604/homelab.git
+cd homelab
 
-# 2. Configurer l'environnement
+# 2. Option A: Docker Compose (legacy)
+cd infrastructure
 cp .env.example .env
-nano .env  # Éditer avec vos valeurs (DOMAIN, EMAIL, etc.)
-
-# 3. Générer les secrets
-chmod +x generate-secrets.sh
+nano .env
 ./generate-secrets.sh
 
-# 4. Déployer l'infrastructure
+# 2. Option B: Kubernetes (recommandé)
+cd kubernetes
+chmod +x install-k3s.sh
+sudo ./install-k3s.sh
 chmod +x scripts/maintenance/deploy-infrastructure.sh
 ./scripts/maintenance/deploy-infrastructure.sh
 
