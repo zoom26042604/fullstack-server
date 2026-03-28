@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: cv
-        image: nathan-ferrefr-cv:latest
+        image: docker.io/library/nathan-ferrefr-cv:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

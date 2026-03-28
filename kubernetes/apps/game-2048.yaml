@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: game-2048
-        image: game-2048:latest
+        image: docker.io/library/game-2048:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
