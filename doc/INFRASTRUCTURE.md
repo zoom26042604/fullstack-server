@@ -823,4 +823,4 @@ homelab/
 
 ---
 
-*Documentation generee le 28 mars 2026. Version du cluster : K3s v1.34.3+k3s3.*
+*Documentation realisee le 28 mars 2026. Version du cluster : K3s v1.34.3+k3s3.*
