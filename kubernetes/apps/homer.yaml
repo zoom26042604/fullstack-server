@@ -1,0 +1,159 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homer
+  namespace: infrastructure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homer
+  template:
+    metadata:
+      labels:
+        app: homer
+    spec:
+      containers:
+      - name: homer
+        image: b4bz/homer:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: homer-config
+          mountPath: /www/assets
+          readOnly: true
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      volumes:
+      - name: homer-config
+        configMap:
+          name: homer-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homer-config
+  namespace: infrastructure
+data:
+  config.yml: |
+    ---
+    title: "zoom2604.dev - Homelab"
+    subtitle: "Infrastructure Dashboard"
+    logo: false
+    header: true
+    footer: false
+    columns: 3
+    connectivityCheck: true
+
+    links:
+      - name: "GitHub"
+        icon: "fab fa-github"
+        url: "https://github.com/zoom26042604"
+        target: "_blank"
+
+    services:
+      - name: "Applications"
+        icon: "fas fa-rocket"
+        items:
+          - name: "Portfolio Nathan"
+            subtitle: "nathan-ferre.fr"
+            url: "https://nathan-ferre.fr"
+            icon: "fas fa-user"
+            target: "_blank"
+          - name: "CV"
+            subtitle: "cv.nathan-ferre.fr"
+            url: "https://cv.nathan-ferre.fr"
+            icon: "fas fa-file-alt"
+            target: "_blank"
+          - name: "Game 2048"
+            subtitle: "2048.zoom2604.dev"
+            url: "https://2048.zoom2604.dev"
+            icon: "fas fa-gamepad"
+            target: "_blank"
+
+      - name: "Monitoring"
+        icon: "fas fa-chart-line"
+        items:
+          - name: "Grafana"
+            subtitle: "Metrics & dashboards"
+            url: "https://grafana.zoom2604.dev"
+            icon: "fas fa-chart-area"
+            target: "_blank"
+          - name: "Uptime Kuma"
+            subtitle: "Service health monitoring"
+            url: "https://uptime.zoom2604.dev"
+            icon: "fas fa-heartbeat"
+            target: "_blank"
+          - name: "Traefik Dashboard"
+            subtitle: "Reverse proxy"
+            url: "https://traefik.zoom2604.dev"
+            icon: "fas fa-route"
+            target: "_blank"
+
+      - name: "Infrastructure"
+        icon: "fas fa-server"
+        items:
+          - name: "Kubernetes"
+            subtitle: "K3s cluster"
+            icon: "fas fa-dharmachakra"
+          - name: "PostgreSQL"
+            subtitle: "Database"
+            icon: "fas fa-database"
+          - name: "Redis"
+            subtitle: "Cache"
+            icon: "fas fa-memory"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homer
+  namespace: infrastructure
+spec:
+  selector:
+    app: homer
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homer
+  namespace: infrastructure
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - zoom2604.dev
+    - www.zoom2604.dev
+    secretName: homer-tls
+  rules:
+  - host: zoom2604.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: homer
+            port:
+              number: 80
+  - host: www.zoom2604.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: homer
+            port:
+              number: 80

@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: portfolio-azrael
+  namespace: nathan-ferre
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`nathan-ferre.fr`)
+      kind: Rule
+      services:
+        - name: portfolio-azrael
+          port: 80
+  tls:
+    certResolver: letsencrypt

@@ -37,13 +37,7 @@ spec:
         - name: NODE_ENV
           value: "production"
         - name: DATABASE_URL
-          value: "postgresql://postgres:$(POSTGRES_PASSWORD)@postgres.infrastructure.svc.cluster.local:5432/game2048?schema=public"
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-credentials
-              namespace: infrastructure
-              key: POSTGRES_PASSWORD
+          value: "file:/app/data/game2048.db"
         - name: TZ
           value: "Europe/Paris"
         volumeMounts:

@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homer
+  namespace: infrastructure
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`zoom2604.dev`)
+      kind: Rule
+      services:
+        - name: homer
+          port: 80
+  tls:
+    certResolver: letsencrypt

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: portfolio
-        image: portfolio-azrael:latest
+        image: nathan-ferrefr-azrael:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

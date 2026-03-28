@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cv
+  namespace: nathan-ferre
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cv.nathan-ferre.fr`)
+      kind: Rule
+      services:
+        - name: cv
+          port: 80
+  tls:
+    certResolver: letsencrypt

@@ -1,0 +1,28 @@
+---
+# Middleware pour permettre les challenges ACME HTTP sans redirection
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: acme-http
+  namespace: infrastructure
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+# IngressRoute HTTP pour les challenges ACME (sans redirection)
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: acme-http
+  namespace: infrastructure
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/.well-known/acme-challenge/`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+      priority: 1000

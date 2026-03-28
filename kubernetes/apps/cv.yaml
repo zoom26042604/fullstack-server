@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: cv
-        image: cv-nathan:latest
+        image: nathan-ferrefr-cv:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

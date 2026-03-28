@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: game-2048
+  namespace: zoom2604
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`2048.zoom2604.dev`)
+      kind: Rule
+      services:
+        - name: game-2048
+          port: 80
+  tls:
+    certResolver: letsencrypt
