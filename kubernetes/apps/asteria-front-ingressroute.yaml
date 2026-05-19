@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: asteria-front
+  namespace: asteria-jdr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`asteria-jdr.fr`) || Host(`www.asteria-jdr.fr`)
+      kind: Rule
+      services:
+        - name: asteria-front
+          port: 80
+  tls:
+    certResolver: letsencrypt

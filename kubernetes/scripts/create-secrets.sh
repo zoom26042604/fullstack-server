@@ -56,6 +56,14 @@ kubectl create secret generic traefik-dashboard-auth \
     --namespace=infrastructure \
     --dry-run=client -o yaml | kubectl apply -f -
 
+kubectl create secret generic asteria-back-secrets \
+    --from-literal=ASTERIA_DB_NAME="$ASTERIA_DB_NAME" \
+    --from-literal=ASTERIA_DB_USER="$ASTERIA_DB_USER" \
+    --from-literal=ASTERIA_DB_PASSWORD="$ASTERIA_DB_PASSWORD" \
+    --from-literal=JWT_SECRET="$ASTERIA_JWT_SECRET" \
+    --namespace=asteria-jdr \
+    --dry-run=client -o yaml | kubectl apply -f -
+
 echo "✅ Secrets created successfully!"
 echo ""
 echo "📋 Verify secrets:"

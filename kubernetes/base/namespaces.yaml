@@ -25,6 +25,14 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: asteria-jdr
+  labels:
+    app.kubernetes.io/part-of: homelab
+    domain: asteria-jdr.fr
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: monitoring
   labels:
     app.kubernetes.io/part-of: homelab

@@ -76,6 +76,11 @@ data:
             url: "https://2048.zoom2604.dev"
             icon: "fas fa-gamepad"
             target: "_blank"
+          - name: "Asteria JDR"
+            subtitle: "asteria-jdr.fr"
+            url: "https://asteria-jdr.fr"
+            icon: "fas fa-dragon"
+            target: "_blank"
 
       - name: "Monitoring"
         icon: "fas fa-chart-line"
