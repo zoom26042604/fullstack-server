@@ -8,7 +8,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`asteria-jdr.fr`) || Host(`www.asteria-jdr.fr`)
+    - match: Host(`asteria-jdr.fr`)
       kind: Rule
       services:
         - name: asteria-front

@@ -65,20 +65,9 @@ spec:
   tls:
   - hosts:
     - asteria-jdr.fr
-    - www.asteria-jdr.fr
     secretName: asteria-front-tls
   rules:
   - host: asteria-jdr.fr
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: asteria-front
-            port:
-              number: 80
-  - host: www.asteria-jdr.fr
     http:
       paths:
       - path: /
