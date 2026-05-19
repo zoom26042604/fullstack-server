@@ -51,29 +51,3 @@ spec:
   ports:
   - port: 80
     targetPort: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: asteria-front
-  namespace: asteria-jdr
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-spec:
-  ingressClassName: traefik
-  tls:
-  - hosts:
-    - asteria-jdr.fr
-    secretName: asteria-front-tls
-  rules:
-  - host: asteria-jdr.fr
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: asteria-front
-            port:
-              number: 80
